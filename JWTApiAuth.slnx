@@ -1,1 +1,3 @@
-<Solution />
+<Solution>
+  <Project Path="JWTApi/JWTApi.csproj" />
+</Solution>

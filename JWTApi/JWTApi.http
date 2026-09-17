@@ -1,0 +1,47 @@
+@JWTApi_HostAddress = http://localhost:5225
+
+GET {{JWTApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+
+### Register a new user (starts with the "User" role)
+POST {{JWTApi_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Bernullie",
+  "lastName": "Ramone",
+  "email": "Bernullie_Ramon@dogTag.com",
+  "password": "Perro1981!"
+}
+
+### Log in as the seeded admin to get a JWT
+# @name login
+POST {{JWTApi_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "Bernullie_Ramon@dogTag.com",
+  "password": "Perro1981!"
+}
+
+### Call a protected endpoint (any authenticated user)
+GET {{JWTApi_HostAddress}}/api/secured
+Authorization: Bearer {{login.response.body.token}}
+
+### Call an admin-only endpoint
+GET {{JWTApi_HostAddress}}/api/secured/admin
+Authorization: Bearer {{login.response.body.token}}
+
+### Promote the registered user to Admin (needs the admin token)
+POST {{JWTApi_HostAddress}}/api/auth/add-role
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "email": "Bernullie_Ramon@dogTag.com",
+  "role": "Admin"
+}
+
+
+###
