@@ -19,7 +19,7 @@ public static class DbSeeder
             }
         }
 
-        const string adminEmail = "admin@codewithmukesh.com";
+        const string adminEmail = "Bernullie_Ramon@dogTag.com";
         if (await userManager.FindByEmailAsync(adminEmail) is null)
         {
             var admin = new ApplicationUser
@@ -31,7 +31,7 @@ public static class DbSeeder
                 EmailConfirmed = true
             };
 
-            await userManager.CreateAsync(admin, "Admin123!");
+            await userManager.CreateAsync(admin, "Perro1981!");
             await userManager.AddToRoleAsync(admin, Roles.Admin);
         }
     }

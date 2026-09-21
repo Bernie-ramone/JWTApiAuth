@@ -12,17 +12,16 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Read the "JwtSettings" section into a strongly-typed object.
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>()!;
 
-// 2. EF Core + ASP.NET Core Identity. InMemory keeps this sample runnable with zero database setup.
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("JwtAuthDb"));
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options => options.User.RequireUniqueEmail = true)
     .AddEntityFrameworkStores<AppDbContext>();
 
-// 3. Tell ASP.NET Core to authenticate requests using JWT bearer tokens.
+
 builder.Services
     .AddAuthentication(options =>
     {
@@ -31,7 +30,7 @@ builder.Services
     })
     .AddJwtBearer(options =>
     {
-        // Keep the claim names exactly as they appear in the token (no surprise remapping).
+
         options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -42,7 +41,6 @@ builder.Services
             ValidIssuer = jwtSettings.Issuer,
             ValidAudience = jwtSettings.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
-            // No grace period on expiry - the token dies exactly when it says it does.
             ClockSkew = TimeSpan.Zero,
             NameClaimType = JwtRegisteredClaimNames.Name,
             RoleClaimType = "role"
@@ -55,7 +53,6 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Seed the roles and a default admin so you can log in right away.
 await DbSeeder.SeedAsync(app.Services);
 
 if (app.Environment.IsDevelopment())
@@ -66,7 +63,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Order matters: authenticate first (who are you?), then authorize (are you allowed?).
 app.UseAuthentication();
 app.UseAuthorization();
 

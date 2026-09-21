@@ -14,7 +14,6 @@ public static class AuthEndpoints
         group.MapPost("/register", RegisterAsync);
         group.MapPost("/login", LoginAsync);
 
-        // Only an existing admin is allowed to hand out roles.
         group.MapPost("/add-role", AddRoleAsync)
             .RequireAuthorization(policy => policy.RequireRole(Roles.Admin));
     }
@@ -23,7 +22,6 @@ public static class AuthEndpoints
         RegisterRequest request,
         UserManager<ApplicationUser> userManager)
     {
-        // Stop duplicate sign-ups with the same email.
         if (await userManager.FindByEmailAsync(request.Email) is not null)
         {
             return Results.BadRequest($"Email '{request.Email}' is already registered.");
@@ -57,7 +55,6 @@ public static class AuthEndpoints
     {
         var user = await userManager.FindByEmailAsync(request.Email);
 
-        // Same response for "no such user" and "wrong password" so we don't leak which emails exist.
         if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
         {
             return Results.Unauthorized();
